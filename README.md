@@ -120,7 +120,9 @@ This project uses GitHub Actions for continuous integration and deployment. The 
 - **Trigger**: Push to `master` branch or pull requests
 - **Actions**:
   - Validates conventional commits
-  - Builds and validates the VS Code extension (lint, package)
+  - Lints and checks formatting
+  - Runs Vitest unit tests and VS Code Mocha e2e tests
+  - Builds and packages the VS Code extension
 
 ### Release Workflow (`release.yml`)
 
