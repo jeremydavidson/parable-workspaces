@@ -109,6 +109,7 @@ Desktop.ini
 # extension specific files
 parable-workspaces.vsix
 .vscode-test/
+coverage/
 
 # docs specific files
 ROADMAP.md

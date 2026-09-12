@@ -10,8 +10,14 @@
     "strict": true /* enable all strict type-checking options */,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "types": ["vscode", "node"]
+    "types": ["vscode", "node", "mocha"]
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", ".vscode-test", "landpage*", "out"]
+  "exclude": [
+    "node_modules",
+    ".vscode-test",
+    "landpage*",
+    "out",
+    "src/test/unit/**"
+  ]
 }

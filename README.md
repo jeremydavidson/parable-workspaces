@@ -91,14 +91,25 @@ You can save and register a new workspace in **Parable Workspaces** in two ways:
 
 **Available Commands**
 
-| Command                | Description                                    |
-| ---------------------- | ---------------------------------------------- |
-| `npm install`          | Installs dependencies                          |
-| `npm run build`        | Compiles the extension                         |
-| `npm run lint`         | Runs ESLint checks                             |
-| `npm run package`      | Packages the extension for distribution        |
-| `npm run publish`      | Publishes the extension to VS Code Marketplace |
-| `npm run ovsx:publish` | Publishes to OpenVSX Registry                  |
+| Command                      | Description                                                   |
+| ---------------------------- | ------------------------------------------------------------- |
+| `npm install`                | Installs dependencies                                         |
+| `npm run build`              | Compiles the extension                                        |
+| `npm run lint`               | Runs ESLint checks                                            |
+| `npm run test`               | Runs unit tests then e2e tests                                |
+| `npm run test:unit`          | Runs Vitest unit tests                                        |
+| `npm run test:unit:coverage` | Runs unit tests with V8 coverage under `coverage/unit`        |
+| `npm run test:e2e`           | Compiles and runs Mocha e2e tests in a VS Code Extension Host |
+| `npm run test:e2e:coverage`  | Runs e2e tests with c8 coverage under `coverage/e2e`          |
+| `npm run package`            | Packages the extension for distribution                       |
+| `npm run publish`            | Publishes the extension to VS Code Marketplace                |
+| `npm run ovsx:publish`       | Publishes to OpenVSX Registry                                 |
+
+### Testing
+
+- **Unit tests** use **Vitest** (fast Node runner, no VS Code process). Place them in `src/test/unit/**/*.test.ts`.
+- **E2E / integration tests** use **`@vscode/test-cli`** + **Mocha** (official Extension Development Host runner). Place them in `src/test/e2e/**/*.test.ts`.
+- Coverage for unit tests is generated under `coverage/unit`. Wrapping e2e with c8 validates the pipeline, but Extension Host code runs in a child process so prefer unit coverage for actionable reports.
 
 ## 🚀 CI/CD
 
