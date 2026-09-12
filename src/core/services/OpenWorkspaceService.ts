@@ -1,5 +1,7 @@
 import { WorkspaceRepository } from '../repositories/WorkspaceRepository';
 import { UserInteraction } from '../../infra/editor/UserInteraction';
+import { EditorContext } from '../../infra/editor/EditorContext';
+import { Workspace } from '../dtos/Workspace';
 
 export class OpenWorkspaceService {
   constructor(
@@ -9,13 +11,62 @@ export class OpenWorkspaceService {
 
   async open(id: string, forceNewWindow: boolean = false): Promise<void> {
     const workspace = this.repository.findOne(id);
-    if (workspace) {
+    if (!workspace) {
+      return;
+    }
+
+    const openPath = EditorContext.resolveOpenPath(workspace);
+    if (!openPath) {
+      return;
+    }
+
+    if (
+      !workspace.workspaceFile &&
+      openPath.toLowerCase().endsWith('.code-workspace')
+    ) {
+      workspace.workspaceFile = openPath;
+    }
+
+    if (this.isCurrentlyOpen(workspace, openPath)) {
       workspace.lastOpened = Date.now();
       await this.repository.save(workspace);
-      await this.userInteraction.openFolder(
-        workspace.folders[0],
-        forceNewWindow,
-      );
+      return;
     }
+
+    await this.userInteraction.openFolder(openPath, forceNewWindow);
+
+    workspace.lastOpened = Date.now();
+    await this.repository.save(workspace);
+  }
+
+  private isCurrentlyOpen(workspace: Workspace, openPath: string): boolean {
+    const currentId = EditorContext.getCurrentWorkspaceId();
+    if (currentId && currentId === workspace.id) {
+      return true;
+    }
+
+    const currentWorkspaceFile = EditorContext.getCurrentWorkspaceFile();
+    if (currentWorkspaceFile && currentWorkspaceFile === openPath) {
+      return true;
+    }
+
+    if (
+      workspace.workspaceFile &&
+      currentWorkspaceFile === workspace.workspaceFile
+    ) {
+      return true;
+    }
+
+    const currentFolders = EditorContext.getCurrentWorkspaceFolders();
+    if (
+      !currentWorkspaceFile &&
+      currentFolders.length > 0 &&
+      workspace.folders.length > 0 &&
+      !openPath.toLowerCase().endsWith('.code-workspace')
+    ) {
+      return currentFolders[0] === workspace.folders[0];
+    }
+
+    return false;
   }
 }
