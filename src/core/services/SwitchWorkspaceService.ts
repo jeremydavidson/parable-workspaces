@@ -47,8 +47,7 @@ export class SwitchWorkspaceService {
     const items: WorkspaceQuickPickItem[] = sortedWorkspaces.map((ws) => {
       const item: WorkspaceQuickPickItem = {
         id: ws.id,
-        label:
-          showFavicon && ws.emoji ? `${ws.emoji} ${ws.name}` : ws.name,
+        label: showFavicon && ws.emoji ? `${ws.emoji} ${ws.name}` : ws.name,
         detail: ws.workspaceFile || ws.folders[0] || '',
       };
 
