@@ -85,15 +85,21 @@ export class ViewMessageHandler {
         await this.filterService.toggleFilters(!!message.showFilters);
         this.refreshCallback();
         break;
+      case 'toggleTimeUpdated':
+        await this.filterService.toggleTimeUpdated(!!message.showTimeUpdated);
+        this.refreshCallback();
+        break;
+      case 'toggleShowFavicon':
+        await this.filterService.toggleShowFavicon(
+          message.showFavicon !== false,
+        );
+        this.refreshCallback();
+        break;
       case 'changeSort':
         if (message.sortType) {
           await this.filterService.changeSort(message.sortType as SortType);
           this.refreshCallback();
         }
-        break;
-      case 'toggleTimeUpdated':
-        await this.filterService.toggleTimeUpdated(!!message.showTimeUpdated);
-        this.refreshCallback();
         break;
       case 'refresh':
         this.refreshCallback();

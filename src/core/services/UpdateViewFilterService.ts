@@ -28,4 +28,9 @@ export class UpdateViewFilterService {
     this.ViewState.showTimeUpdated = value;
     await this.settingsStateManager.set(SettingsKey.ShowTimeUpdated, value);
   }
+
+  public async toggleShowFavicon(value: boolean): Promise<void> {
+    this.ViewState.showFavicon = value;
+    await this.settingsStateManager.set(SettingsKey.ShowFavicon, value);
+  }
 }

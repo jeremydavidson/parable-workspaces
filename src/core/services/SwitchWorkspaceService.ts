@@ -4,6 +4,7 @@ import { OpenWorkspaceService } from './OpenWorkspaceService';
 import { UserInteraction } from '../../infra/editor/UserInteraction';
 import { WorkspaceIconCache } from '../../infra/persistence/WorkspaceIconCache';
 import { SettingsStateManager } from '../../infra/persistence/SettingsStateManager';
+import { SettingsKey } from '../enums/SettingsKey';
 import { Workspace } from '../dtos/Workspace';
 import { FaviconHelper } from '../helpers/FaviconHelper';
 
@@ -37,6 +38,7 @@ export class SwitchWorkspaceService {
       return;
     }
 
+    const showFavicon = this.settings.get(SettingsKey.ShowFavicon, true);
     const detectIcons = this.settings.detectsIcons();
     const sortedWorkspaces = [...workspaces].sort(
       (a, b) => b.lastOpened - a.lastOpened,
@@ -45,11 +47,12 @@ export class SwitchWorkspaceService {
     const items: WorkspaceQuickPickItem[] = sortedWorkspaces.map((ws) => {
       const item: WorkspaceQuickPickItem = {
         id: ws.id,
-        label: `${ws.emoji ? ws.emoji + ' ' : ''}${ws.name}`,
+        label:
+          showFavicon && ws.emoji ? `${ws.emoji} ${ws.name}` : ws.name,
         detail: ws.workspaceFile || ws.folders[0] || '',
       };
 
-      if (!ws.emoji) {
+      if (showFavicon && !ws.emoji) {
         const iconPath = this.resolveIconPath(ws, detectIcons);
         if (iconPath) {
           item.iconPath = iconPath;

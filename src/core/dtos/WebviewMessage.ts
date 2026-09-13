@@ -6,4 +6,5 @@ export interface WebviewMessage {
   sortType?: string;
   showFilters?: boolean;
   showTimeUpdated?: boolean;
+  showFavicon?: boolean;
 }

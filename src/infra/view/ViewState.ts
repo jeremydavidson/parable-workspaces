@@ -42,6 +42,7 @@ export interface ViewPayload {
     sortType: SortType;
     showFilters: boolean;
     showTimeUpdated: boolean;
+    showFavicon: boolean;
     detectIcons: boolean;
   };
   availableColors: typeof WorkspaceColors;
@@ -53,6 +54,7 @@ export class ViewState {
   public currentSort = SortType.FavoritesFirst;
   public showFilters = false;
   public showTimeUpdated = false;
+  public showFavicon = true;
 
   constructor(
     private readonly repository: WorkspaceRepository,
@@ -80,6 +82,10 @@ export class ViewState {
     this.showTimeUpdated = this.SettingsStateManager.get(
       SettingsKey.ShowTimeUpdated,
       false,
+    );
+    this.showFavicon = this.SettingsStateManager.get(
+      SettingsKey.ShowFavicon,
+      true,
     );
   }
 
@@ -110,9 +116,10 @@ export class ViewState {
     return {
       command: 'updateWorkspaces',
       workspaces: workspaces.map((ws) => {
-        const iconPath = !ws.emoji
-          ? this.iconCache.resolve(ws, allowDeepScan, detectIcons)
-          : undefined;
+        const iconPath =
+          this.showFavicon && !ws.emoji
+            ? this.iconCache.resolve(ws, allowDeepScan, detectIcons)
+            : undefined;
 
         return {
           id: ws.id,
@@ -148,6 +155,7 @@ export class ViewState {
         sortType: this.currentSort,
         showFilters: this.showFilters,
         showTimeUpdated: this.showTimeUpdated,
+        showFavicon: this.showFavicon,
         detectIcons,
       },
       availableColors: WorkspaceColors,

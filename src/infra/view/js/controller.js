@@ -5,12 +5,14 @@ class WorkspacesViewController {
     this.currentSort = 'favorites';
     this.showFilters = false;
     this.showTimeUpdated = false;
+    this.showFavicon = true;
     this.lastRenderKey = '';
 
     this.searchBox = document.getElementById('searchBox');
     this.btnToggleFilters = document.getElementById('btnToggleFilters');
     this.btnShowFavorites = document.getElementById('btnShowFavorites');
     this.btnShowTimeUpdated = document.getElementById('btnShowTimeUpdated');
+    this.btnShowFavicon = document.getElementById('btnShowFavicon');
     this.sortSelect = document.getElementById('sortSelect');
     this.workspacesList = document.getElementById('workspacesList');
     this.contextMenu = document.getElementById('contextMenu');
@@ -85,6 +87,15 @@ class WorkspacesViewController {
       this.vscode.postMessage({
         command: 'toggleTimeUpdated',
         showTimeUpdated: this.showTimeUpdated,
+      });
+    });
+
+    this.btnShowFavicon.addEventListener('click', () => {
+      this.showFavicon = !this.showFavicon;
+      this.btnShowFavicon.classList.toggle('active', this.showFavicon);
+      this.vscode.postMessage({
+        command: 'toggleShowFavicon',
+        showFavicon: this.showFavicon,
       });
     });
 
@@ -183,6 +194,8 @@ class WorkspacesViewController {
       this.filterRow.classList.toggle('hidden', !this.showFilters);
       this.showTimeUpdated = !!message.filters.showTimeUpdated;
       this.btnShowTimeUpdated.classList.toggle('active', this.showTimeUpdated);
+      this.showFavicon = message.filters.showFavicon !== false;
+      this.btnShowFavicon.classList.toggle('active', this.showFavicon);
       requestAnimationFrame(() => this.updateFilterCompactMode());
     }
     renderWorkspaces(

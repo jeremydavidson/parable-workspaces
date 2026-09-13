@@ -3,4 +3,5 @@ export enum SettingsKey {
   SortType = 'sortType',
   ShowFilters = 'showFilters',
   ShowTimeUpdated = 'showTimeUpdated',
+  ShowFavicon = 'showFavicon',
 }

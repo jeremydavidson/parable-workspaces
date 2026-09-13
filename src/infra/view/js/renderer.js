@@ -13,14 +13,14 @@ function renderWorkspaces(vscode, workspacesList, workspaces, filters) {
   }
 
   const showTimeUpdated = filters?.showTimeUpdated === true;
-  const showIcons = true;
+  const showFavicon = filters?.showFavicon !== false;
 
   workspacesList.innerHTML = workspaces
     .map(
       (ws) => `
-      <div class="workspace-item${showIcons ? ' design-emoji-ring' : ' no-icons'}" data-id="${ws.id}">
+      <div class="workspace-item${showFavicon ? ' design-emoji-ring' : ' no-icons'}" data-id="${ws.id}">
         ${
-          showIcons
+          showFavicon
             ? `<div class="workspace-emoji-wrapper${ws.iconSrc && !ws.emoji ? ' has-favicon' : ''}">
           ${renderWorkspaceBadge(ws)}
         </div>`

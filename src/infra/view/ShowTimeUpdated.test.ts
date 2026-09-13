@@ -61,6 +61,7 @@ describe('Updated filter chip', () => {
       sortType: SortType.FavoritesFirst,
       showFilters: false,
       showTimeUpdated: false,
+      showFavicon: true,
       detectIcons: false,
     });
   });
@@ -90,8 +91,6 @@ describe('Updated filter chip', () => {
     expect(filtersHtml).toContain('id="btnShowTimeUpdated"');
     expect(filtersHtml).toContain('filter-chip-label">Favorites');
     expect(filtersHtml).toContain('filter-chip-label">Updated');
-    expect(filtersHtml).not.toContain('btnShowFavicon');
-    expect(filtersHtml).not.toContain('Icons');
     expect(css).toContain('.filter-row.compact .filter-chip-label');
     expect(controller).toContain('ResizeObserver');
     expect(controller).toContain('updateFilterCompactMode');
