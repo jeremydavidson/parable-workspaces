@@ -21,6 +21,12 @@ describe('Updated filter chip', () => {
   const settings = {
     get: vi.fn(),
     set: vi.fn(async (): Promise<void> => undefined),
+    detectsIcons: vi.fn((): boolean => false),
+  };
+
+  const iconCache = {
+    resolve: vi.fn((): undefined => undefined),
+    warm: vi.fn((): void => undefined),
   };
 
   let viewState: ViewState;
@@ -31,16 +37,19 @@ describe('Updated filter chip', () => {
       return fallback;
     });
     settings.set.mockClear();
+    settings.detectsIcons.mockReturnValue(false);
 
     viewState = new ViewState(
       {
         findOne: (): undefined => undefined,
+        findAll: (): never[] => [],
       } as never,
       { search: (): never[] => [] } as never,
       {
         sort: (workspaces: unknown[]): unknown[] => workspaces,
       } as never,
       settings as never,
+      iconCache as never,
     );
     service = new UpdateViewFilterService(viewState, settings as never);
   });
@@ -52,6 +61,7 @@ describe('Updated filter chip', () => {
       sortType: SortType.FavoritesFirst,
       showFilters: false,
       showTimeUpdated: false,
+      detectIcons: false,
     });
   });
 

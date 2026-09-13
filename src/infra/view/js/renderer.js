@@ -13,18 +13,19 @@ function renderWorkspaces(vscode, workspacesList, workspaces, filters) {
   }
 
   const showTimeUpdated = filters?.showTimeUpdated === true;
+  const showIcons = true;
 
   workspacesList.innerHTML = workspaces
     .map(
       (ws) => `
-      <div class="workspace-item design-emoji-ring" data-id="${ws.id}">
-        <div class="workspace-emoji-wrapper">
-          ${
-            ws.emoji
-              ? `<span class="workspace-emoji">${ws.emoji}</span>`
-              : `<span class="workspace-initials">${getInitials(ws.name)}</span>`
-          }
-        </div>
+      <div class="workspace-item${showIcons ? ' design-emoji-ring' : ' no-icons'}" data-id="${ws.id}">
+        ${
+          showIcons
+            ? `<div class="workspace-emoji-wrapper${ws.iconSrc && !ws.emoji ? ' has-favicon' : ''}">
+          ${renderWorkspaceBadge(ws)}
+        </div>`
+            : ''
+        }
         <div class="workspace-body">
           <div class="workspace-header">
             <span class="workspace-title">
@@ -66,6 +67,19 @@ function renderWorkspaces(vscode, workspacesList, workspaces, filters) {
     });
   });
 
+  workspacesList.querySelectorAll('.workspace-favicon').forEach((img) => {
+    img.addEventListener('error', () => {
+      const fallback = document.createElement('span');
+      fallback.className = 'workspace-initials';
+      fallback.textContent = img.dataset.fallback || 'WS';
+      const wrapper = img.closest('.workspace-emoji-wrapper');
+      if (wrapper) {
+        wrapper.classList.remove('has-favicon');
+      }
+      img.replaceWith(fallback);
+    });
+  });
+
   workspacesList.querySelectorAll('.workspace-item').forEach((item) => {
     const ws = workspaces.find((w) => w.id === item.dataset.id);
     if (ws) {
@@ -96,6 +110,16 @@ function renderWorkspaces(vscode, workspacesList, workspaces, filters) {
       );
     });
   });
+}
+
+function renderWorkspaceBadge(ws) {
+  if (ws.emoji) {
+    return `<span class="workspace-emoji">${ws.emoji}</span>`;
+  }
+  if (ws.iconSrc) {
+    return `<img class="workspace-favicon" src="${ws.iconSrc}" alt="" data-fallback="${escapeHtml(getInitials(ws.name))}" />`;
+  }
+  return `<span class="workspace-initials">${getInitials(ws.name)}</span>`;
 }
 
 function renderBanner(vscode, status, workspaces) {

@@ -5,6 +5,7 @@ class WorkspacesViewController {
     this.currentSort = 'favorites';
     this.showFilters = false;
     this.showTimeUpdated = false;
+    this.lastRenderKey = '';
 
     this.searchBox = document.getElementById('searchBox');
     this.btnToggleFilters = document.getElementById('btnToggleFilters');
@@ -17,6 +18,48 @@ class WorkspacesViewController {
 
     this.bindEvents();
     this.observeFilterRowWidth();
+    this.restoreInitialPayload();
+    this.vscode.postMessage({ command: 'webviewReady' });
+  }
+
+  restoreInitialPayload() {
+    const embedded = this.readEmbeddedPayload();
+    if (embedded?.workspaces) {
+      this.handleUpdateWorkspaces(embedded, false);
+      return;
+    }
+    this.restoreCachedState();
+  }
+
+  readEmbeddedPayload() {
+    const node = document.getElementById('initial-payload');
+    if (!node || !node.textContent) {
+      return undefined;
+    }
+
+    try {
+      const parsed = JSON.parse(node.textContent);
+      return parsed && parsed.command ? parsed : undefined;
+    } catch {
+      return undefined;
+    }
+  }
+
+  restoreCachedState() {
+    const cached = this.vscode.getState();
+    if (!cached || !cached.workspaces) {
+      return;
+    }
+
+    this.handleUpdateWorkspaces(cached, false);
+  }
+
+  persistState(message) {
+    this.vscode.setState({
+      workspaces: message.workspaces,
+      currentStatus: message.currentStatus,
+      filters: message.filters,
+    });
   }
 
   bindEvents() {
@@ -70,7 +113,7 @@ class WorkspacesViewController {
     window.addEventListener('message', (event) => {
       const message = event.data;
       if (message.command === 'updateWorkspaces') {
-        this.handleUpdateWorkspaces(message);
+        this.handleUpdateWorkspaces(message, true);
       }
     });
 
@@ -105,7 +148,31 @@ class WorkspacesViewController {
     this.filterRow.classList.toggle('compact', overflows);
   }
 
-  handleUpdateWorkspaces(message) {
+  handleUpdateWorkspaces(message, persist = true) {
+    const renderKey = JSON.stringify({
+      currentStatus: message.currentStatus,
+      filters: message.filters,
+      workspaces: (message.workspaces || []).map((workspace) => ({
+        id: workspace.id,
+        name: workspace.name,
+        color: workspace.color,
+        emoji: workspace.emoji,
+        iconSrc: workspace.iconSrc,
+        iconRelativePath: workspace.iconRelativePath,
+        isFavorite: workspace.isFavorite,
+        dateLabel: workspace.dateLabel,
+        tags: workspace.tags,
+      })),
+    });
+
+    if (renderKey === this.lastRenderKey) {
+      if (persist) {
+        this.persistState(message);
+      }
+      return;
+    }
+    this.lastRenderKey = renderKey;
+
     if (message.filters) {
       this.showOnlyFavorites = message.filters.showOnlyFavorites;
       this.btnShowFavorites.classList.toggle('active', this.showOnlyFavorites);
@@ -125,6 +192,9 @@ class WorkspacesViewController {
       message.filters,
     );
     renderBanner(this.vscode, message.currentStatus, message.workspaces || []);
+    if (persist) {
+      this.persistState(message);
+    }
   }
 }
 

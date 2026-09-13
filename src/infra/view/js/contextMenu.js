@@ -34,6 +34,7 @@ function showContextMenu(vscode, x, y, workspaceId, isFavorite) {
     <div class="context-menu-item" data-action="openWorkspaceNewWindow">Open in New Window</div>
     <div class="context-menu-item" data-action="toggleFavorite">${isFavorite ? 'Unfavorite' : 'Favorite'}</div>
     <div class="context-menu-item" data-action="changeEmoji">Change Emoji</div>
+    <div class="context-menu-item" data-action="changeIcon">Change Icon</div>
     <div class="context-menu-item" data-action="changeColor">Change Color</div>
     <div class="context-menu-separator"></div>
     <div class="context-menu-item" data-action="editWorkspace">Rename</div>
