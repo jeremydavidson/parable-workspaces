@@ -114,7 +114,8 @@
     "test:e2e": "npm run compile:fresh && node ./scripts/run-vscode-test.mjs",
     "test:e2e:coverage": "npm run compile:fresh && node ./scripts/run-vscode-test.mjs --coverage --coverage-output ./coverage/e2e --coverage-reporter html --coverage-reporter lcov && node ./scripts/print-coverage-summary.mjs e2e",
     "test:coverage": "npm run test:unit:coverage && npm run test:e2e:coverage",
-    "coverage:summary": "node ./scripts/print-coverage-summary.mjs"
+    "coverage:summary": "node ./scripts/print-coverage-summary.mjs",
+    "bench:sidebar-icons": "bash scripts/bench-sidebar-icons.sh"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",

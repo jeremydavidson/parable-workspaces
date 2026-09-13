@@ -30,8 +30,14 @@ export async function activate(
     container.workspaceIconCache,
     container.webviewIconCacheDir,
   );
+  provider.warmup();
+
   context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider(ViewProvider.viewType, provider),
+    vscode.window.registerWebviewViewProvider(ViewProvider.viewType, provider, {
+      webviewOptions: {
+        retainContextWhenHidden: true,
+      },
+    }),
   );
 
   registerCommands(context, container, provider);
