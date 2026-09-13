@@ -259,10 +259,6 @@ body {
   height: 100%;
   object-fit: contain;
   flex-shrink: 0;
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  padding: 0;
   display: block;
 }
 
@@ -279,21 +275,6 @@ body {
 
 .workspace-emoji-wrapper.has-favicon {
   overflow: hidden;
-  width: 30px;
-  height: 30px;
-  padding: 0;
-  border: 1.5px solid transparent;
-  border-radius: 6px;
-  background-color: transparent;
-  background-clip: padding-box;
-  box-shadow: none;
-}
-
-.workspace-item.design-emoji-ring:hover .workspace-emoji-wrapper.has-favicon {
-  border-color: transparent;
-  background-color: transparent;
-  box-shadow: none;
-  transform: none;
 }
 
 .workspace-date {
