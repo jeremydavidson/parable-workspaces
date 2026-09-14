@@ -10,7 +10,8 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "types": ["vscode", "node", "mocha"]
+    "typeRoots": ["./node_modules/@types"],
+    "types": ["node", "vscode", "mocha"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", ".vscode-test", "landpage*", "out"]
