@@ -3,6 +3,7 @@ import { Container } from './container';
 import { ViewProvider } from './infra/view/ViewProvider';
 import { registerCommands } from './commands';
 import { ConfigurationKey } from './core/enums/ConfigurationKey';
+import { FaviconHelper } from './core/helpers/FaviconHelper';
 
 export async function activate(
   context: vscode.ExtensionContext,
@@ -48,6 +49,8 @@ export async function activate(
     ),
     vscode.workspace.onDidChangeConfiguration((event) => {
       if (event.affectsConfiguration(ConfigurationKey.DetectIcons)) {
+        FaviconHelper.clearCache();
+        container.workspaceIconCache.clear();
         provider.refresh();
       }
     }),

@@ -73,4 +73,54 @@ describe('WorkspaceIconCache', () => {
     expect(resolveSpy).not.toHaveBeenCalled();
     resolveSpy.mockRestore();
   });
+
+  it('rescans after a persisted deepComplete miss so newly added icons appear', () => {
+    cache = new WorkspaceIconCache({
+      globalState: {
+        get: vi.fn(() => ({
+          'ws-1': {
+            foldersKey: '/tmp/demo|',
+            deepComplete: true,
+          },
+        })),
+        update: vi.fn(async () => undefined),
+      },
+    } as never);
+
+    const resolveSpy = vi
+      .spyOn(FaviconHelper, 'resolveIconPath')
+      .mockReturnValue('/tmp/demo/assets/favicon.png');
+    const usable = vi
+      .spyOn(FaviconHelper, 'isCachedPathUsable')
+      .mockReturnValue(true);
+
+    expect(cache.resolve(workspace, false, true)).toBe(
+      '/tmp/demo/assets/favicon.png',
+    );
+    expect(resolveSpy).toHaveBeenCalled();
+    resolveSpy.mockRestore();
+    usable.mockRestore();
+  });
+
+  it('does not reload permanent deepComplete misses from storage', () => {
+    cache = new WorkspaceIconCache({
+      globalState: {
+        get: vi.fn(() => ({
+          'ws-1': {
+            foldersKey: '/tmp/demo|',
+            deepComplete: true,
+          },
+        })),
+        update: vi.fn(async () => undefined),
+      },
+    } as never);
+
+    const resolveSpy = vi
+      .spyOn(FaviconHelper, 'resolveIconPath')
+      .mockReturnValue(undefined);
+
+    expect(cache.resolve(workspace, true, true)).toBeUndefined();
+    expect(resolveSpy).toHaveBeenCalled();
+    resolveSpy.mockRestore();
+  });
 });

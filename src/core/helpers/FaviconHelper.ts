@@ -272,8 +272,11 @@ export class FaviconHelper {
     const cacheKey = searchRoots.join('|');
     const cached = this.resolveCache.get(cacheKey);
     if (cached && cached.expiresAt > Date.now()) {
-      if (cached.value || cached.deepComplete || !allowDeepScan) {
+      if (cached.value) {
         return cached.value;
+      }
+      if (allowDeepScan && cached.deepComplete) {
+        return undefined;
       }
     }
 

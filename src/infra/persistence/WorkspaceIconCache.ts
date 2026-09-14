@@ -23,6 +23,9 @@ export class WorkspaceIconCache {
       if (!entry || typeof entry.foldersKey !== 'string') {
         continue;
       }
+      if (entry.deepComplete && !entry.path) {
+        continue;
+      }
       this.entries.set(id, {
         path: entry.path,
         foldersKey: entry.foldersKey,
@@ -57,8 +60,6 @@ export class WorkspaceIconCache {
 
       if (cached.path && !FaviconHelper.isCachedPathUsable(cached.path)) {
         this.entries.delete(workspace.id);
-      } else if (cached.deepComplete) {
-        return undefined;
       }
     }
 
@@ -69,13 +70,22 @@ export class WorkspaceIconCache {
       allowDeepScan,
     );
 
-    this.entries.set(workspace.id, {
-      path: found,
-      foldersKey,
-      deepComplete: allowDeepScan || !!found || !!cached?.deepComplete,
-    });
-    this.schedulePersist();
-    return found;
+    if (found) {
+      this.entries.set(workspace.id, {
+        path: found,
+        foldersKey,
+        deepComplete: allowDeepScan || !!cached?.deepComplete,
+      });
+      this.schedulePersist();
+      return found;
+    }
+
+    if (allowDeepScan) {
+      this.entries.delete(workspace.id);
+      this.schedulePersist();
+    }
+
+    return undefined;
   }
 
   public warm(
@@ -96,6 +106,11 @@ export class WorkspaceIconCache {
 
   public invalidate(workspaceId: string): void {
     this.entries.delete(workspaceId);
+    this.schedulePersist();
+  }
+
+  public clear(): void {
+    this.entries.clear();
     this.schedulePersist();
   }
 

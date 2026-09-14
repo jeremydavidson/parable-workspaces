@@ -95,6 +95,7 @@ export class ViewProvider implements vscode.WebviewViewProvider {
     this.lastPayload = this.ViewState.getPayload(false);
     setTimeout(() => {
       this.ViewState.warmIcons(true);
+      this.scheduleRefresh(true);
     }, 0);
   }
 
