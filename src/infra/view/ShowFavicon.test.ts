@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 vi.mock('vscode', () => ({
   workspace: {
@@ -27,13 +27,13 @@ import { ViewState } from './ViewState';
 describe('Icons filter chip', () => {
   const settings = {
     get: vi.fn(),
-    set: vi.fn(async () => undefined),
-    detectsIcons: vi.fn(() => false),
+    set: vi.fn(async (): Promise<void> => undefined),
+    detectsIcons: vi.fn((): boolean => false),
   };
 
   const iconCache = {
-    resolve: vi.fn(() => undefined),
-    warm: vi.fn(),
+    resolve: vi.fn((): undefined => undefined),
+    warm: vi.fn((): void => undefined),
   };
 
   let viewState: ViewState;
@@ -48,9 +48,14 @@ describe('Icons filter chip', () => {
     iconCache.resolve.mockReturnValue(undefined);
 
     viewState = new ViewState(
-      { findOne: () => undefined, findAll: () => [] } as never,
-      { search: () => [] } as never,
-      { sort: (workspaces: unknown[]) => workspaces } as never,
+      {
+        findOne: (): undefined => undefined,
+        findAll: (): never[] => [],
+      } as never,
+      { search: (): never[] => [] } as never,
+      {
+        sort: (workspaces: unknown[]): unknown[] => workspaces,
+      } as never,
       settings as never,
       iconCache as never,
     );
@@ -103,7 +108,7 @@ describe('Icons filter chip', () => {
       return fallback;
     });
 
-    const showQuickPick = vi.fn(async () => undefined);
+    const showQuickPick = vi.fn(async (): Promise<undefined> => undefined);
     const switchService = new SwitchWorkspaceService(
       {
         findAll: () => [
@@ -117,7 +122,7 @@ describe('Icons filter chip', () => {
           },
         ],
       } as never,
-      { open: vi.fn() } as never,
+      { open: vi.fn(async (): Promise<void> => undefined) } as never,
       {
         showInfo: vi.fn(),
         executeCommand: vi.fn(),
@@ -143,7 +148,7 @@ describe('Icons filter chip', () => {
   });
 
   it('includes QuickPick emoji icons when showFavicon is true', async () => {
-    const showQuickPick = vi.fn(async () => undefined);
+    const showQuickPick = vi.fn(async (): Promise<undefined> => undefined);
     const switchService = new SwitchWorkspaceService(
       {
         findAll: () => [
@@ -157,7 +162,7 @@ describe('Icons filter chip', () => {
           },
         ],
       } as never,
-      { open: vi.fn() } as never,
+      { open: vi.fn(async (): Promise<void> => undefined) } as never,
       {
         showInfo: vi.fn(),
         executeCommand: vi.fn(),
