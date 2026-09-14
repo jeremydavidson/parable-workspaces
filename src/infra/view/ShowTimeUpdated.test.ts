@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 vi.mock('vscode', () => ({
   workspace: {
@@ -20,7 +20,7 @@ import { ViewState } from './ViewState';
 describe('Updated filter chip', () => {
   const settings = {
     get: vi.fn(),
-    set: vi.fn(async () => undefined),
+    set: vi.fn(async (): Promise<void> => undefined),
   };
 
   let viewState: ViewState;
@@ -33,9 +33,13 @@ describe('Updated filter chip', () => {
     settings.set.mockClear();
 
     viewState = new ViewState(
-      { findOne: () => undefined } as never,
-      { search: () => [] } as never,
-      { sort: (workspaces: unknown[]) => workspaces } as never,
+      {
+        findOne: (): undefined => undefined,
+      } as never,
+      { search: (): never[] => [] } as never,
+      {
+        sort: (workspaces: unknown[]): unknown[] => workspaces,
+      } as never,
       settings as never,
     );
     service = new UpdateViewFilterService(viewState, settings as never);
