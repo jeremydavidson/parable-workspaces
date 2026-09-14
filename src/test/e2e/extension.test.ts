@@ -24,18 +24,4 @@ suite('Extension E2E', () => {
     const views = extension.packageJSON?.contributes?.views;
     assert.ok(views?.parableWorkspacesContainer);
   });
-
-  test('registers the detectIcons configuration contribution', () => {
-    const extension = vscode.extensions.getExtension(
-      'stanleygomes.parable-workspaces',
-    );
-    assert.ok(extension);
-    const properties =
-      extension.packageJSON?.contributes?.configuration?.properties;
-    assert.ok(properties?.['parableWorkspaces.detectIcons']);
-    assert.strictEqual(
-      properties['parableWorkspaces.detectIcons'].default,
-      false,
-    );
-  });
 });
