@@ -3,7 +3,7 @@
 ## Methodology
 
 Benchmarks run via `scripts/bench-sidebar-icons.sh` (Vitest:
-`src/test/unit/SidebarIconPerf.bench.test.ts`).
+`src/infra/persistence/WorkspaceIconCache.bench.test.ts`).
 
 1. Build N synthetic workspace fixtures, each with `public/favicon.png`.
 2. Compare resolve strategies:
