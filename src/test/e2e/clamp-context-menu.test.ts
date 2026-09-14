@@ -3,7 +3,7 @@ import { createRequire } from 'module';
 import { join } from 'path';
 import * as vscode from 'vscode';
 
-const require = createRequire(__filename);
+const nodeRequire = createRequire(__filename);
 
 suite('Clamp context menu E2E', () => {
   test('activates with the workspaces sidebar contribution', async () => {
@@ -25,7 +25,7 @@ suite('Clamp context menu E2E', () => {
     assert.ok(extension);
     await extension.activate();
 
-    const { clampContextMenuPosition } = require(
+    const { clampContextMenuPosition } = nodeRequire(
       join(extension.extensionPath, 'src/infra/view/js/contextMenu.js'),
     );
     assert.strictEqual(typeof clampContextMenuPosition, 'function');
