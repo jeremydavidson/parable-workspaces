@@ -1,11 +1,20 @@
 import { describe, expect, it } from 'vitest';
-import { createRequire } from 'node:module';
-import { join } from 'node:path';
+import { createRequire } from 'module';
+import { join } from 'path';
 
-const require = createRequire(import.meta.url);
+const require = createRequire(__filename);
 const { clampContextMenuPosition } = require(
   join(__dirname, './contextMenu.js'),
-);
+) as {
+  clampContextMenuPosition: (
+    x: number,
+    y: number,
+    menuWidth: number,
+    menuHeight: number,
+    viewportWidth: number,
+    viewportHeight: number,
+  ) => { left: number; top: number };
+};
 
 describe('Context menu viewport clamping', () => {
   it('keeps the requested position when the menu fits', () => {
