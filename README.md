@@ -107,9 +107,9 @@ You can save and register a new workspace in **Parable Workspaces** in two ways:
 
 ### Testing
 
-- **Unit tests** use **Vitest** (fast Node runner, no VS Code process). Place them in `src/test/unit/**/*.test.ts`.
+- **Unit tests** use **Vitest** (fast Node runner, no VS Code process). Co-locate them next to the code under test as `*.test.ts` (for example `src/core/helpers/StringHelper.test.ts`).
 - **E2E / integration tests** use **`@vscode/test-cli`** + **Mocha** (official Extension Development Host runner). Place them in `src/test/e2e/**/*.test.ts`.
-- Coverage for unit tests is generated under `coverage/unit`. Wrapping e2e with c8 validates the pipeline, but Extension Host code runs in a child process so prefer unit coverage for actionable reports.
+- Coverage reports are generated under `coverage/unit` (Vitest) and `coverage/e2e` (c8). CI uploads the unit coverage artifact; there is no coverage threshold gate.
 
 ## 🚀 CI/CD
 
@@ -121,7 +121,7 @@ This project uses GitHub Actions for continuous integration and deployment. The 
 - **Actions**:
   - Validates conventional commits
   - Lints and checks formatting
-  - Runs Vitest unit tests and VS Code Mocha e2e tests
+  - Runs Vitest unit tests (with coverage artifact) and VS Code Mocha e2e tests
   - Builds and packages the VS Code extension
 
 ### Release Workflow (`release.yml`)
