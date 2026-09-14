@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { WorkspaceRepository } from '../repositories/WorkspaceRepository';
 import { UserInteraction } from '../../infra/editor/UserInteraction';
 import { EditorContext } from '../../infra/editor/EditorContext';
@@ -27,7 +28,7 @@ export class OpenWorkspaceService {
       workspace.workspaceFile = openPath;
     }
 
-    if (this.isCurrentlyOpen(workspace, openPath)) {
+    if (!forceNewWindow && this.isCurrentlyOpen(workspace, openPath)) {
       workspace.lastOpened = Date.now();
       await this.repository.save(workspace);
       return;
@@ -45,28 +46,13 @@ export class OpenWorkspaceService {
       return true;
     }
 
-    const currentWorkspaceFile = EditorContext.getCurrentWorkspaceFile();
-    if (currentWorkspaceFile && currentWorkspaceFile === openPath) {
-      return true;
+    const currentPath =
+      EditorContext.getCurrentWorkspaceFile() ||
+      EditorContext.getCurrentWorkspaceFolders()[0];
+    if (!currentPath) {
+      return false;
     }
 
-    if (
-      workspace.workspaceFile &&
-      currentWorkspaceFile === workspace.workspaceFile
-    ) {
-      return true;
-    }
-
-    const currentFolders = EditorContext.getCurrentWorkspaceFolders();
-    if (
-      !currentWorkspaceFile &&
-      currentFolders.length > 0 &&
-      workspace.folders.length > 0 &&
-      !openPath.toLowerCase().endsWith('.code-workspace')
-    ) {
-      return currentFolders[0] === workspace.folders[0];
-    }
-
-    return false;
+    return path.normalize(currentPath) === path.normalize(openPath);
   }
 }
