@@ -18,7 +18,8 @@
     ".vscode-test",
     "landpage*",
     "out",
-    "src/**/*.test.ts",
+    "src/core/**/*.test.ts",
+    "src/infra/**/*.test.ts",
     "src/**/*.bench.test.ts"
   ]
 }
