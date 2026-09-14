@@ -114,7 +114,7 @@ You can save and register a new workspace in **Parable Workspaces** in two ways:
 - Coverage is **separate by design**:
   - `coverage/unit/` — Vitest V8 coverage (primary, actionable metric). Open `coverage/unit/index.html`.
   - `coverage/e2e/` — `@vscode/test-cli --coverage` via Extension Host `NODE_V8_COVERAGE`. Open `coverage/e2e/index.html`.
-- CLI coverage output is a short **folder %** table (not a per-file dump). Re-print anytime with `npm run coverage:summary`.
+- CLI coverage output is a short **path %** table. Root entry files are listed individually (`src/extension.ts`, …), not rolled into a misleading `src` bucket. E2E summary leads with **function** coverage because line % is inflated by activation/module load. Re-print anytime with `npm run coverage:summary`.
 - Treat e2e coverage as a coarse Extension Host report: activation loads much of the DI graph, so percentages look higher than unit coverage and are not a path-coverage substitute.
 - CI uploads both artifacts. There is no coverage threshold gate. E2e output is filtered for known Extension Host noise (AgentHost session spam, clean exit `signal: unknown`).
 - Placeholder dirs `coverage/unit` and `coverage/e2e` are tracked; generated HTML/LCOV files stay gitignored.

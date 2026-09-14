@@ -9,21 +9,25 @@ const targets = {
   unit: {
     label: 'Unit',
     dir: join(root, 'coverage', 'unit'),
+    primary: 'lines',
+    note: null,
   },
   e2e: {
     label: 'E2E',
     dir: join(root, 'coverage', 'e2e'),
+    primary: 'funcs',
+    note: 'Function coverage is the useful signal. Line % is inflated by extension activation/module load and is shown only as context.',
   },
 };
 
 const pct = (hit, total) => {
   if (total === 0) {
-    return '100.0';
+    return 'n/a';
   }
-  return ((100 * hit) / total).toFixed(1);
+  return `${((100 * hit) / total).toFixed(1)}%`;
 };
 
-const folderKey = (filePath) => {
+const bucketKey = (filePath) => {
   const normalized = filePath.replaceAll('\\', '/');
   const parts = normalized.split('/');
   const srcIndex = parts.lastIndexOf('src');
@@ -32,11 +36,16 @@ const folderKey = (filePath) => {
   }
 
   const fromSrc = parts.slice(srcIndex);
-  if (fromSrc.length <= 2) {
-    return fromSrc.slice(0, -1).join('/') || 'src';
+
+  if (fromSrc.length === 2) {
+    return fromSrc.join('/');
   }
 
-  return fromSrc.slice(0, 3).join('/');
+  if (fromSrc.length >= 3) {
+    return fromSrc.slice(0, 3).join('/');
+  }
+
+  return 'src';
 };
 
 const parseLcov = (lcovPath) => {
@@ -53,7 +62,7 @@ const parseLcov = (lcovPath) => {
     if (!currentFile) {
       return;
     }
-    const key = folderKey(currentFile);
+    const key = bucketKey(currentFile);
     const bucket = folders.get(key) ?? {
       linesFound: 0,
       linesHit: 0,
@@ -81,7 +90,11 @@ const parseLcov = (lcovPath) => {
   for (const line of readFileSync(lcovPath, 'utf8').split(/\r?\n/)) {
     if (line.startsWith('SF:')) {
       commit();
-      currentFile = relative(root, line.slice(3)).replaceAll('\\', '/');
+      const absolute = line.slice(3);
+      currentFile = relative(root, absolute).replaceAll('\\', '/');
+      if (currentFile.startsWith('..')) {
+        currentFile = absolute.replaceAll('\\', '/');
+      }
     } else if (line.startsWith('LF:')) {
       linesFound = Number(line.slice(3));
     } else if (line.startsWith('LH:')) {
@@ -102,6 +115,37 @@ const parseLcov = (lcovPath) => {
   return folders;
 };
 
+const emptyTotals = () => ({
+  linesFound: 0,
+  linesHit: 0,
+  branchesFound: 0,
+  branchesHit: 0,
+  functionsFound: 0,
+  functionsHit: 0,
+});
+
+const addBucket = (acc, bucket) => {
+  acc.linesFound += bucket.linesFound;
+  acc.linesHit += bucket.linesHit;
+  acc.branchesFound += bucket.branchesFound;
+  acc.branchesHit += bucket.branchesHit;
+  acc.functionsFound += bucket.functionsFound;
+  acc.functionsHit += bucket.functionsHit;
+  return acc;
+};
+
+const formatRow = (name, width, bucket, primary) => {
+  const lines = pct(bucket.linesHit, bucket.linesFound).padStart(6);
+  const branch = pct(bucket.branchesHit, bucket.branchesFound).padStart(6);
+  const funcs = pct(bucket.functionsHit, bucket.functionsFound).padStart(6);
+
+  if (primary === 'funcs') {
+    return `${name.padEnd(width)}  ${funcs}  ${branch}  ${lines}`;
+  }
+
+  return `${name.padEnd(width)}  ${lines}  ${branch}  ${funcs}`;
+};
+
 const printReport = (kind) => {
   const target = targets[kind];
   if (!target) {
@@ -119,43 +163,33 @@ const printReport = (kind) => {
   }
 
   const folders = parseLcov(lcovPath);
-  const rows = [...folders.entries()].sort(([a], [b]) => a.localeCompare(b));
-  const totals = rows.reduce(
-    (acc, [, bucket]) => {
-      acc.linesFound += bucket.linesFound;
-      acc.linesHit += bucket.linesHit;
-      acc.branchesFound += bucket.branchesFound;
-      acc.branchesHit += bucket.branchesHit;
-      acc.functionsFound += bucket.functionsFound;
-      acc.functionsHit += bucket.functionsHit;
-      return acc;
-    },
-    {
-      linesFound: 0,
-      linesHit: 0,
-      branchesFound: 0,
-      branchesHit: 0,
-      functionsFound: 0,
-      functionsHit: 0,
-    },
-  );
+  const rows = [...folders.entries()]
+    .filter(
+      ([, bucket]) =>
+        bucket.linesFound + bucket.branchesFound + bucket.functionsFound > 0,
+    )
+    .sort(([a], [b]) => a.localeCompare(b));
+  const totals = rows.reduce((acc, [, bucket]) => addBucket(acc, bucket), emptyTotals());
+  const nameWidth = Math.max(18, ...rows.map(([name]) => name.length), 5);
+  const primary = target.primary;
+  const header =
+    primary === 'funcs'
+      ? `${'Path'.padEnd(nameWidth)}   Funcs  Branch   Lines`
+      : `${'Path'.padEnd(nameWidth)}   Lines  Branch   Funcs`;
 
-  const folderWidth = Math.max(12, ...rows.map(([name]) => name.length), 5);
-  const header = `${'Folder'.padEnd(folderWidth)}  Lines  Branch  Funcs`;
-  console.log(`\n${target.label} coverage by folder`);
+  console.log(`\n${target.label} coverage by path`);
+  if (target.note) {
+    console.log(target.note);
+  }
   console.log(header);
   console.log('-'.repeat(header.length));
 
   for (const [name, bucket] of rows) {
-    console.log(
-      `${name.padEnd(folderWidth)}  ${pct(bucket.linesHit, bucket.linesFound).padStart(5)}%  ${pct(bucket.branchesHit, bucket.branchesFound).padStart(5)}%  ${pct(bucket.functionsHit, bucket.functionsFound).padStart(5)}%`,
-    );
+    console.log(formatRow(name, nameWidth, bucket, primary));
   }
 
   console.log('-'.repeat(header.length));
-  console.log(
-    `${'TOTAL'.padEnd(folderWidth)}  ${pct(totals.linesHit, totals.linesFound).padStart(5)}%  ${pct(totals.branchesHit, totals.branchesFound).padStart(5)}%  ${pct(totals.functionsHit, totals.functionsFound).padStart(5)}%`,
-  );
+  console.log(formatRow('TOTAL', nameWidth, totals, primary));
   console.log(`Reports: ${relative(root, target.dir)}/`);
   console.log(`HTML:    ${htmlPath}`);
   return true;
