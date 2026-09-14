@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { SortType } from '../../core/enums/SortType';
-import { SortWorkspacesService } from '../../core/services/SortWorkspacesService';
-import { Workspace } from '../../core/dtos/Workspace';
+import { SortType } from '../enums/SortType';
+import type { Workspace } from '../dtos/Workspace';
+import { SortWorkspacesService } from './SortWorkspacesService';
 
 function workspace(
   partial: Partial<Workspace> & Pick<Workspace, 'id' | 'name'>,

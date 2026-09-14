@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { StringHelper } from '../../core/helpers/StringHelper';
+import { StringHelper } from './StringHelper';
 
 describe('StringHelper', () => {
   it('replaces template variables without interpreting dollar signs', () => {
