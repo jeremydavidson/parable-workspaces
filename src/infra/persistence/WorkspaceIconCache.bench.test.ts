@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { performance } from 'perf_hooks';
 import { FaviconHelper } from '../../core/helpers/FaviconHelper';
 import { WorkspaceIconCache } from './WorkspaceIconCache';
-import { ViewProvider } from '../../infra/view/ViewProvider';
+import { ViewProvider } from '../view/ViewProvider';
 import type { Workspace } from '../../core/dtos/Workspace';
 
 const fsCounters = {
@@ -76,8 +76,8 @@ function createFixtureWorkspace(root: string, index: number): Workspace {
 function createCache(): WorkspaceIconCache {
   return new WorkspaceIconCache({
     globalState: {
-      get: () => ({}),
-      update: async () => undefined,
+      get: (): Record<string, never> => ({}),
+      update: async (): Promise<void> => undefined,
     },
   } as never);
 }
@@ -179,26 +179,26 @@ describe('sidebar icon performance bench', () => {
     const provider = new ViewProvider(
       extensionUri,
       {
-        onDidChange: () => undefined,
-        findAll: () => [],
-        findOne: () => undefined,
+        onDidChange: (): void => undefined,
+        findAll: (): never[] => [],
+        findOne: (): undefined => undefined,
       } as never,
       {} as never,
       {} as never,
       {} as never,
-      { search: () => [] } as never,
+      { search: (): never[] => [] } as never,
       {} as never,
       {
-        get: (_key: string, fallback: unknown) => fallback,
-        detectsIcons: () => false,
+        get: (_key: string, fallback: unknown): unknown => fallback,
+        detectsIcons: (): boolean => false,
       } as never,
       {} as never,
       {} as never,
       {} as never,
       {} as never,
       {
-        resolve: () => undefined,
-        warm: () => undefined,
+        resolve: (): undefined => undefined,
+        warm: (): void => undefined,
       } as never,
       cacheDir,
     );

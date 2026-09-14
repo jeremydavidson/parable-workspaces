@@ -12,6 +12,7 @@ coverage/**
 .commitlintrc.json
 eslint.config.mjs
 tsconfig.json
+tsconfig.build.json
 vitest.config.mts
 webpack.config.js
 vsc-extension-quickstart.md

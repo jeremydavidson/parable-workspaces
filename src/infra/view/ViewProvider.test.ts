@@ -28,12 +28,12 @@ describe('ViewProvider localResourceRoots', () => {
     const extensionUri = { fsPath: '/ext', scheme: 'file' } as never;
     const repository = {
       onDidChange: vi.fn(),
-      findAll: () => [],
-      findOne: () => undefined,
+      findAll: (): never[] => [],
+      findOne: (): undefined => undefined,
     };
     const settings = {
-      get: vi.fn((_key: string, fallback: unknown) => fallback),
-      detectsIcons: () => false,
+      get: vi.fn((_key: string, fallback: unknown): unknown => fallback),
+      detectsIcons: (): boolean => false,
     };
     const provider = new ViewProvider(
       extensionUri,
@@ -41,7 +41,7 @@ describe('ViewProvider localResourceRoots', () => {
       {} as never,
       {} as never,
       {} as never,
-      { search: () => [] } as never,
+      { search: (): never[] => [] } as never,
       {} as never,
       settings as never,
       {} as never,
@@ -49,8 +49,8 @@ describe('ViewProvider localResourceRoots', () => {
       {} as never,
       {} as never,
       {
-        resolve: () => undefined,
-        warm: () => undefined,
+        resolve: (): undefined => undefined,
+        warm: (): void => undefined,
       } as never,
       '/tmp/stable-webview-icons',
     );
