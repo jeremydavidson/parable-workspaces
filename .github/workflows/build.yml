@@ -96,6 +96,7 @@ jobs:
         run: npm run test:unit:coverage
 
       - name: Upload Unit Coverage
+        if: ${{ !env.ACT }}
         uses: actions/upload-artifact@v7
         with:
           name: unit-coverage
@@ -121,7 +122,7 @@ jobs:
         run: xvfb-run -a npm run test:e2e:coverage
 
       - name: Upload E2E Coverage
-        if: always()
+        if: ${{ always() && !env.ACT }}
         uses: actions/upload-artifact@v7
         with:
           name: e2e-coverage
@@ -154,7 +155,7 @@ jobs:
         run: npx @vscode/vsce package --no-yarn --out parable-workspaces.vsix
 
       - name: Upload VSIX Artifact
-        if: github.event_name == 'push'
+        if: ${{ github.event_name == 'push' && !env.ACT }}
         uses: actions/upload-artifact@v7
         with:
           name: vscode-extension-vsix
