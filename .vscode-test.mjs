@@ -14,7 +14,7 @@ export default defineConfig({
   ],
   coverage: {
     output: './coverage/e2e',
-    reporter: ['text', 'html', 'lcov'],
+    reporter: ['html', 'lcov'],
     exclude: ['**/out/test/**', '**/*.test.js', '**/infra/view/js/**'],
   },
 });

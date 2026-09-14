@@ -98,10 +98,11 @@ You can save and register a new workspace in **Parable Workspaces** in two ways:
 | `npm run lint`               | Runs ESLint checks                                            |
 | `npm run test`               | Runs unit tests then e2e tests                                |
 | `npm run test:unit`          | Runs Vitest unit tests                                        |
-| `npm run test:unit:coverage` | Runs unit tests with V8 coverage under `coverage/unit`        |
+| `npm run test:unit:coverage` | Runs unit tests and writes `coverage/unit` (brief folder summary) |
 | `npm run test:e2e`           | Compiles and runs Mocha e2e tests in a VS Code Extension Host |
-| `npm run test:e2e:coverage`  | Runs e2e tests with Extension Host V8 coverage under `coverage/e2e` |
+| `npm run test:e2e:coverage`  | Runs e2e tests and writes `coverage/e2e` (brief folder summary) |
 | `npm run test:coverage`      | Runs unit coverage then e2e coverage (separate report folders) |
+| `npm run coverage:summary`   | Prints folder % summaries for existing coverage reports |
 | `npm run package`            | Packages the extension for distribution                       |
 | `npm run publish`            | Publishes the extension to VS Code Marketplace                |
 | `npm run ovsx:publish`       | Publishes to OpenVSX Registry                                 |
@@ -111,10 +112,12 @@ You can save and register a new workspace in **Parable Workspaces** in two ways:
 - **Unit tests** use **Vitest** (fast Node runner, no VS Code process). Co-locate them next to the code under test as `*.test.ts` (for example `src/core/helpers/StringHelper.test.ts`).
 - **E2E / integration tests** use **`@vscode/test-cli`** + **Mocha** (official Extension Development Host runner). Place them in `src/test/e2e/**/*.test.ts`.
 - Coverage is **separate by design**:
-  - `coverage/unit` — Vitest V8 coverage of co-located unit tests (primary, actionable metric)
-  - `coverage/e2e` — `@vscode/test-cli --coverage` via Extension Host `NODE_V8_COVERAGE` (not a parent-process c8 wrap, which always reported 0%)
+  - `coverage/unit/` — Vitest V8 coverage (primary, actionable metric). Open `coverage/unit/index.html`.
+  - `coverage/e2e/` — `@vscode/test-cli --coverage` via Extension Host `NODE_V8_COVERAGE`. Open `coverage/e2e/index.html`.
+- CLI coverage output is a short **folder %** table (not a per-file dump). Re-print anytime with `npm run coverage:summary`.
 - Treat e2e coverage as a coarse Extension Host report: activation loads much of the DI graph, so percentages look higher than unit coverage and are not a path-coverage substitute.
 - CI uploads both artifacts. There is no coverage threshold gate. E2e output is filtered for known Extension Host noise (AgentHost session spam, clean exit `signal: unknown`).
+- Placeholder dirs `coverage/unit` and `coverage/e2e` are tracked; generated HTML/LCOV files stay gitignored.
 
 ## 🚀 CI/CD
 

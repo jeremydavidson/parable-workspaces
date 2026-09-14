@@ -22,8 +22,9 @@ export default defineConfig({
         'src/infra/view/html/**',
         '**/node_modules/**',
       ],
-      reporter: ['text', 'html', 'lcov'],
+      reporter: ['html', 'lcov', 'json-summary'],
       reportsDirectory: './coverage/unit',
+      reportOnFailure: true,
     },
   },
 });
