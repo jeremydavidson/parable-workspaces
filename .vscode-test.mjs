@@ -6,5 +6,15 @@ export default defineConfig({
     ui: 'tdd',
     timeout: 60000,
   },
-  launchArgs: ['--disable-extensions'],
+  launchArgs: [
+    '--disable-extensions',
+    '--disable-workspace-trust',
+    '--skip-welcome',
+    '--skip-release-notes',
+  ],
+  coverage: {
+    output: './coverage/e2e',
+    reporter: ['text', 'html', 'lcov'],
+    exclude: ['**/out/test/**', '**/*.test.js', '**/infra/view/js/**'],
+  },
 });
