@@ -28,7 +28,7 @@ export class OpenWorkspaceService {
       workspace.workspaceFile = openPath;
     }
 
-    if (!forceNewWindow && this.isCurrentlyOpen(workspace, openPath)) {
+    if (this.isCurrentlyOpen(workspace, openPath)) {
       workspace.lastOpened = Date.now();
       await this.repository.save(workspace);
       return;

@@ -103,7 +103,7 @@ describe('OpenWorkspaceService', () => {
     expect(openFolder).toHaveBeenCalledWith('/tmp/plain', false);
   });
 
-  it('still opens in a new window when forceNewWindow is true even if already open', async () => {
+  it('skips opening when the target is already open even if forceNewWindow is true', async () => {
     workspace.workspaceFile = '/tmp/multi/multi.code-workspace';
     workspaceState.workspaceFile = {
       fsPath: '/tmp/multi/multi.code-workspace',
@@ -125,10 +125,8 @@ describe('OpenWorkspaceService', () => {
 
     await service.open(workspace.id, true);
 
-    expect(openFolder).toHaveBeenCalledWith(
-      '/tmp/multi/multi.code-workspace',
-      true,
-    );
+    expect(openFolder).not.toHaveBeenCalled();
+    expect(save).toHaveBeenCalled();
   });
 
   it('opens a code-workspace from a folder window that shares the same primary folder', async () => {

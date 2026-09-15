@@ -30,7 +30,7 @@ export class ViewMessageHandler {
     switch (message.command) {
       case 'openWorkspace':
         if (message.workspaceId) {
-          await this.openService.open(message.workspaceId, false);
+          await this.openService.open(message.workspaceId, true);
         }
         break;
       case 'openWorkspaceNewWindow':

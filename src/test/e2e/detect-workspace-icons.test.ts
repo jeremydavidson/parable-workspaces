@@ -24,4 +24,22 @@ suite('Detect workspace icons E2E', () => {
       .get('detectIcons');
     assert.strictEqual(value, false);
   });
+
+  test('left-click openWorkspace requests a new window', async () => {
+    const extension = vscode.extensions.getExtension(
+      'stanleygomes.parable-workspaces',
+    );
+    assert.ok(extension);
+    const handlerPath = vscode.Uri.joinPath(
+      extension.extensionUri,
+      'out/infra/view/ViewMessageHandler.js',
+    );
+    const raw = await vscode.workspace.fs.readFile(handlerPath);
+    const source = Buffer.from(raw).toString('utf8');
+    assert.ok(
+      /case\s*['"]openWorkspace['"][\s\S]*?\.open\(\s*message\.workspaceId\s*,\s*true\s*\)/.test(
+        source,
+      ),
+    );
+  });
 });
