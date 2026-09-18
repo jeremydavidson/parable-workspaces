@@ -25,10 +25,28 @@ describe('OpenWorkspaceService', () => {
   const openFolder = vi.fn(async () => undefined);
   const save = vi.fn(async () => undefined);
   let workspace: Workspace;
+  let openNewWindow = false;
+
+  const createService = (): OpenWorkspaceService => {
+    const repository = {
+      findOne: vi.fn(() => workspace),
+      save,
+    };
+    const userInteraction = { openFolder };
+    const settings = {
+      opensNewWindow: (): boolean => openNewWindow,
+    };
+    return new OpenWorkspaceService(
+      repository as never,
+      userInteraction as never,
+      settings as never,
+    );
+  };
 
   beforeEach(() => {
     openFolder.mockClear();
     save.mockClear();
+    openNewWindow = false;
     workspaceState.workspaceFolders = undefined;
     workspaceState.workspaceFile = undefined;
     workspace = {
@@ -41,15 +59,7 @@ describe('OpenWorkspaceService', () => {
   });
 
   it('opens the code-workspace file instead of folders[0] when switching', async () => {
-    const repository = {
-      findOne: vi.fn(() => workspace),
-      save,
-    };
-    const userInteraction = { openFolder };
-    const service = new OpenWorkspaceService(
-      repository as never,
-      userInteraction as never,
-    );
+    const service = createService();
 
     await service.open(workspace.id, false);
 
@@ -68,15 +78,7 @@ describe('OpenWorkspaceService', () => {
   it('opens the recorded workspaceFile when present', async () => {
     workspace.workspaceFile = '/tmp/multi/saved.code-workspace';
     workspace.id = StringHelper.toBase64('/tmp/multi/folder-a');
-    const repository = {
-      findOne: vi.fn(() => workspace),
-      save,
-    };
-    const userInteraction = { openFolder };
-    const service = new OpenWorkspaceService(
-      repository as never,
-      userInteraction as never,
-    );
+    const service = createService();
 
     await service.open(workspace.id, false);
     expect(openFolder).toHaveBeenCalledWith(
@@ -85,22 +87,36 @@ describe('OpenWorkspaceService', () => {
     );
   });
 
-  it('keeps forceNewWindow false by default', async () => {
+  it('replaces the current window when openNewWindow is unset', async () => {
     workspace.folders = ['/tmp/plain'];
     workspace.id = StringHelper.toBase64('/tmp/plain');
-    const repository = {
-      findOne: vi.fn(() => workspace),
-      save,
-    };
-    const userInteraction = { openFolder };
-    const service = new OpenWorkspaceService(
-      repository as never,
-      userInteraction as never,
-    );
+    const service = createService();
 
     await service.open(workspace.id);
 
     expect(openFolder).toHaveBeenCalledWith('/tmp/plain', false);
+  });
+
+  it('opens a new window when the openNewWindow setting is true', async () => {
+    openNewWindow = true;
+    workspace.folders = ['/tmp/plain'];
+    workspace.id = StringHelper.toBase64('/tmp/plain');
+    const service = createService();
+
+    await service.open(workspace.id);
+
+    expect(openFolder).toHaveBeenCalledWith('/tmp/plain', true);
+  });
+
+  it('lets an explicit forceNewWindow override the setting', async () => {
+    openNewWindow = false;
+    workspace.folders = ['/tmp/plain'];
+    workspace.id = StringHelper.toBase64('/tmp/plain');
+    const service = createService();
+
+    await service.open(workspace.id, true);
+
+    expect(openFolder).toHaveBeenCalledWith('/tmp/plain', true);
   });
 
   it('skips opening when the target is already open even if forceNewWindow is true', async () => {
@@ -113,15 +129,7 @@ describe('OpenWorkspaceService', () => {
       { uri: { fsPath: '/tmp/multi/folder-a' }, name: 'folder-a' },
     ];
 
-    const repository = {
-      findOne: vi.fn(() => workspace),
-      save,
-    };
-    const userInteraction = { openFolder };
-    const service = new OpenWorkspaceService(
-      repository as never,
-      userInteraction as never,
-    );
+    const service = createService();
 
     await service.open(workspace.id, true);
 
@@ -134,15 +142,7 @@ describe('OpenWorkspaceService', () => {
       { uri: { fsPath: '/tmp/multi/folder-a' }, name: 'folder-a' },
     ];
 
-    const repository = {
-      findOne: vi.fn(() => workspace),
-      save,
-    };
-    const userInteraction = { openFolder };
-    const service = new OpenWorkspaceService(
-      repository as never,
-      userInteraction as never,
-    );
+    const service = createService();
 
     await service.open(workspace.id, false);
 
@@ -159,15 +159,7 @@ describe('OpenWorkspaceService', () => {
       { uri: { fsPath: '/tmp/plain' }, name: 'plain' },
     ];
 
-    const repository = {
-      findOne: vi.fn(() => workspace),
-      save,
-    };
-    const userInteraction = { openFolder };
-    const service = new OpenWorkspaceService(
-      repository as never,
-      userInteraction as never,
-    );
+    const service = createService();
 
     await service.open(workspace.id, false);
 

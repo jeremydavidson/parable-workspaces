@@ -6,6 +6,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+- feat: add `parableWorkspaces.openNewWindow` to open picked workspaces in a new window unless already open
+
 ## [1.9.0] - 2026-06-30
 
 - docs: update project architecture documentation to reflect refactored directory structure and responsibilities

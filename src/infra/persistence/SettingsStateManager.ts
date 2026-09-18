@@ -11,6 +11,12 @@ export class SettingsStateManager {
       .get<boolean>(ConfigurationKey.DetectIcons, false);
   }
 
+  public opensNewWindow(): boolean {
+    return vscode.workspace
+      .getConfiguration()
+      .get<boolean>(ConfigurationKey.OpenNewWindow, false);
+  }
+
   public get<T>(key: SettingsKey, defaultValue: T): T {
     return this.context.globalState.get<T>(key, defaultValue);
   }

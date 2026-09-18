@@ -65,6 +65,26 @@ You can save and register a new workspace in **Parable Workspaces** in two ways:
 | `Alt + P`          | Linux / Windows | Opens the workspace switcher at the top of the screen |
 | `Cmd + Option + P` | macOS           | Opens the workspace switcher at the top of the screen |
 
+## ⚙️ Configuration
+
+These can be set in user or workspace `settings.json`.
+
+### `parableWorkspaces.detectIcons`
+
+Default: `false`
+
+When `true`, discover favicon/icon/logo images under workspace folders for sidebar
+and QuickPick badges. Configured workspace icons still show when `false`.
+
+### `parableWorkspaces.openNewWindow`
+
+Default: `false`
+
+When `true`, picking a workspace from the sidebar or Command Palette opens a new
+window unless that workspace is already open, in which case its window is activated.
+When `false`, the current window is replaced. The context menu action
+**Open in New Window** always opens a new window.
+
 ## 🛠️ Development
 
 **Requirements**
@@ -91,21 +111,21 @@ You can save and register a new workspace in **Parable Workspaces** in two ways:
 
 **Available Commands**
 
-| Command                      | Description                                                   |
-| ---------------------------- | ------------------------------------------------------------- |
-| `npm install`                | Installs dependencies                                         |
-| `npm run build`              | Compiles the extension                                        |
-| `npm run lint`               | Runs ESLint checks                                            |
-| `npm run test`               | Runs unit tests then e2e tests                                |
-| `npm run test:unit`          | Runs Vitest unit tests                                        |
+| Command                      | Description                                                       |
+| ---------------------------- | ----------------------------------------------------------------- |
+| `npm install`                | Installs dependencies                                             |
+| `npm run build`              | Compiles the extension                                            |
+| `npm run lint`               | Runs ESLint checks                                                |
+| `npm run test`               | Runs unit tests then e2e tests                                    |
+| `npm run test:unit`          | Runs Vitest unit tests                                            |
 | `npm run test:unit:coverage` | Runs unit tests and writes `coverage/unit` (brief folder summary) |
-| `npm run test:e2e`           | Compiles and runs Mocha e2e tests in a VS Code Extension Host |
-| `npm run test:e2e:coverage`  | Runs e2e tests and writes `coverage/e2e` (brief folder summary) |
-| `npm run test:coverage`      | Runs unit coverage then e2e coverage (separate report folders) |
-| `npm run coverage:summary`   | Prints folder % summaries for existing coverage reports |
-| `npm run package`            | Packages the extension for distribution                       |
-| `npm run publish`            | Publishes the extension to VS Code Marketplace                |
-| `npm run ovsx:publish`       | Publishes to OpenVSX Registry                                 |
+| `npm run test:e2e`           | Compiles and runs Mocha e2e tests in a VS Code Extension Host     |
+| `npm run test:e2e:coverage`  | Runs e2e tests and writes `coverage/e2e` (brief folder summary)   |
+| `npm run test:coverage`      | Runs unit coverage then e2e coverage (separate report folders)    |
+| `npm run coverage:summary`   | Prints folder % summaries for existing coverage reports           |
+| `npm run package`            | Packages the extension for distribution                           |
+| `npm run publish`            | Publishes the extension to VS Code Marketplace                    |
+| `npm run ovsx:publish`       | Publishes to OpenVSX Registry                                     |
 
 ### Testing
 

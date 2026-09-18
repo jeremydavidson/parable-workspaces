@@ -65,6 +65,7 @@ export class Container {
     this.openWorkspaceService = new OpenWorkspaceService(
       this.workspaceRepository,
       this.userInteraction,
+      this.SettingsStateManager,
     );
     this.deleteWorkspaceService = new DeleteWorkspaceService(
       this.workspaceRepository,

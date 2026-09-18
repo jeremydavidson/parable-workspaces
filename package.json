@@ -93,6 +93,12 @@
           "default": false,
           "scope": "window",
           "description": "When true, discover favicon/icon/logo images under workspace folders for sidebar and QuickPick badges. Configured workspace icons still show when false."
+        },
+        "parableWorkspaces.openNewWindow": {
+          "type": "boolean",
+          "default": false,
+          "scope": "window",
+          "description": "When true, picking a workspace from the sidebar or Command Palette opens it in a new window unless it is already open, in which case that window is activated. When false, the current window is replaced."
         }
       }
     }

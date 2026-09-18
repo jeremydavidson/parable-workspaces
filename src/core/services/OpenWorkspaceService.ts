@@ -2,15 +2,17 @@ import * as path from 'path';
 import { WorkspaceRepository } from '../repositories/WorkspaceRepository';
 import { UserInteraction } from '../../infra/editor/UserInteraction';
 import { EditorContext } from '../../infra/editor/EditorContext';
+import { SettingsStateManager } from '../../infra/persistence/SettingsStateManager';
 import { Workspace } from '../dtos/Workspace';
 
 export class OpenWorkspaceService {
   constructor(
     private readonly repository: WorkspaceRepository,
     private readonly userInteraction: UserInteraction,
+    private readonly settings: SettingsStateManager,
   ) {}
 
-  async open(id: string, forceNewWindow: boolean = false): Promise<void> {
+  async open(id: string, forceNewWindow?: boolean): Promise<void> {
     const workspace = this.repository.findOne(id);
     if (!workspace) {
       return;
@@ -34,7 +36,8 @@ export class OpenWorkspaceService {
       return;
     }
 
-    await this.userInteraction.openFolder(openPath, forceNewWindow);
+    const openInNewWindow = forceNewWindow ?? this.settings.opensNewWindow();
+    await this.userInteraction.openFolder(openPath, openInNewWindow);
 
     workspace.lastOpened = Date.now();
     await this.repository.save(workspace);
